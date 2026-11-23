@@ -34,6 +34,9 @@
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 
+#define KEY_PIN GPIO_PIN_0
+
+#define LED_PIN GPIO_PIN_13
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -44,7 +47,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-volatile uint32_t jishuqi = 0;
+volatile uint32_t jishuqi = 0; 
 volatile uint32_t anle = 0;
 /* USER CODE END PV */
 
@@ -90,30 +93,29 @@ int main(void)
   MX_GPIO_Init();
   MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
-
+	HAL_TIM_Base_Start_IT(&htim2);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-	HAL_TIM_Base_Start_IT(&htim2); 
+
 	while (1)
 	{
-		/* USER CODE END WHILE */
-		/* USER CODE BEGIN 3 */
-		if (anle!= 0) 
-		{
-				if (jishuqi-anle>= 20) 
-				{
-						if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0) == GPIO_PIN_RESET) 
-						{
-								HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
-						}
-						anle= 0;
-				}
-		}
+    /* USER CODE END WHILE */
+
+    /* USER CODE BEGIN 3 */
+		  if(anle!=0){
+      if(jishuqi-anle>=20){
+        if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0)==GPIO_PIN_RESET){
+              HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13); 
+          }
+          anle=0; 
+      }
+  }
 	}
-	/* USER CODE END 3 */
+  /* USER CODE END 3 */
 }
+
 /**
   * @brief System Clock Configuration
   * @retval None
@@ -154,14 +156,14 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
-    if(htim->Instance==TIM2) {
-			jishuqi++;
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
+    if (htim->Instance==TIM2){
+        jishuqi++; 
     }
 }
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
-    if(GPIO_Pin==GPIO_PIN_0) {
-			anle= jishuqi;
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
+    if (GPIO_Pin==KEY_PIN){
+        anle=jishuqi;
     }
 }
 /* USER CODE END 4 */
